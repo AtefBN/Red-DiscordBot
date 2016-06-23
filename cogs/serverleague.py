@@ -8,7 +8,7 @@ import datetime
 import time
 import aiohttp
 import asyncio
-
+import tabulate
 
 
 snrl_help = ''' ```
@@ -70,13 +70,19 @@ class ServerLeague(object):
         else:
             self.snrl = False
     def print(self):
-        result = '''
-        name: {0}
-        region: {1}
-        platform: {2}
-        arenas: {3}
-        mutators: {4}
-        '''.format(self.name, self.region, self.platform, self.arenas, self.mutators)
+        result = dict()
+        result['name'] = self.name
+        result['region'] = self.region
+        result['platform'] = self.platform
+        result['arena'] = self.arenas
+        result['mutators'] = self.mutators
+        # result = '''
+        # name: {0}
+        # region: {1}
+        # platform: {2}
+        # arenas: {3}
+        # mutators: {4}
+        # '''.format(self.name, self.region, self.platform, self.arenas, self.mutators)
         return result
 
 
@@ -155,10 +161,13 @@ class General:
                 for server in servers:
                     if server.region != arg.lower():
                         servers.remove(arg.lower())
-        message = ''
+        # message = ''
+        # for server in servers:
+        #     message += '/n' + server.print()
+        list_of_dict = []
         for server in servers:
-            message += '/n' + server.print()
-        await self.bot.say(message)
+            list_of_dict.append(server.print())
+        await self.bot.say(tabulate(list_of_dict, headers='keys'))
 
 def setup(bot):
     bot.add_cog(ServerLeague(bot))
